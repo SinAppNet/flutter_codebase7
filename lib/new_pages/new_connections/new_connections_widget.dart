@@ -6,8 +6,10 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/new_pages/new_app_bar/new_app_bar_widget.dart';
 import 'dart:async';
+import '/actions/actions.dart' as action_blocks;
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'new_connections_model.dart';
@@ -29,6 +31,20 @@ class _NewConnectionsWidgetState extends State<NewConnectionsWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => NewConnectionsModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      unawaited(
+        () async {
+          await action_blocks.appTracking(
+            context,
+            userid: FFAppState().currentUser.id,
+            eventName: 'pqge-loaded',
+            pageName: 'conexoes',
+          );
+        }(),
+      );
+    });
 
     _model.pesquisaNomeTextController ??= TextEditingController();
     _model.pesquisaNomeFocusNode ??= FocusNode();
@@ -126,6 +142,16 @@ class _NewConnectionsWidgetState extends State<NewConnectionsWidget> {
                                   duration: Duration(milliseconds: 0),
                                 ),
                               },
+                            );
+
+                            unawaited(
+                              () async {
+                                await action_blocks.appTracking(
+                                  context,
+                                  userid: FFAppState().currentUser.id,
+                                  eventName: 'abrir-central-conexoes',
+                                );
+                              }(),
                             );
                           },
                           child: const Icon(
@@ -287,6 +313,16 @@ class _NewConnectionsWidgetState extends State<NewConnectionsWidget> {
                         onTap: () async {
                           _model.tab = 0;
                           safeSetState(() {});
+                          unawaited(
+                            () async {
+                              await action_blocks.appTracking(
+                                context,
+                                userid: FFAppState().currentUser.id,
+                                eventName: 'tab-loaded',
+                                pageName: 'minhas-conexoes',
+                              );
+                            }(),
+                          );
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -324,6 +360,16 @@ class _NewConnectionsWidgetState extends State<NewConnectionsWidget> {
                         onTap: () async {
                           _model.tab = 1;
                           safeSetState(() {});
+                          unawaited(
+                            () async {
+                              await action_blocks.appTracking(
+                                context,
+                                userid: FFAppState().currentUser.id,
+                                eventName: 'tab-loaded',
+                                pageName: 'minhas-solicitacoes',
+                              );
+                            }(),
+                          );
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -396,7 +442,9 @@ class _NewConnectionsWidgetState extends State<NewConnectionsWidget> {
 
                             if (listViewConexoesAceitasRowList.isEmpty) {
                               return const Center(
-                                child: EmptyWidget(),
+                                child: EmptyWidget(
+                                  message: 'Nenhuma conexão encontrada.',
+                                ),
                               );
                             }
 
@@ -464,6 +512,29 @@ class _NewConnectionsWidgetState extends State<NewConnectionsWidget> {
                                                           milliseconds: 0),
                                                     ),
                                                   },
+                                                );
+
+                                                unawaited(
+                                                  () async {
+                                                    await action_blocks
+                                                        .appTracking(
+                                                      context,
+                                                      userid: FFAppState()
+                                                          .currentUser
+                                                          .id,
+                                                      eventName:
+                                                          'perfil-visualizado',
+                                                      props: <String, dynamic>{
+                                                        'page': 'conexoes',
+                                                        'usuario-id':
+                                                            listViewConexoesAceitasRow
+                                                                .id,
+                                                        'usuario-nome':
+                                                            listViewConexoesAceitasRow
+                                                                .nome,
+                                                      },
+                                                    );
+                                                  }(),
                                                 );
 
                                                 safeSetState(() {});
@@ -627,6 +698,31 @@ class _NewConnectionsWidgetState extends State<NewConnectionsWidget> {
                                                           ),
                                                         },
                                                       );
+
+                                                      unawaited(
+                                                        () async {
+                                                          await action_blocks
+                                                              .appTracking(
+                                                            context,
+                                                            userid: FFAppState()
+                                                                .currentUser
+                                                                .id,
+                                                            eventName:
+                                                                'abrir-chat',
+                                                            props: <String,
+                                                                dynamic>{
+                                                              'page':
+                                                                  'conexoes',
+                                                              'usuario-id':
+                                                                  listViewConexoesAceitasRow
+                                                                      .id,
+                                                              'usuario-nome':
+                                                                  listViewConexoesAceitasRow
+                                                                      .nome,
+                                                            },
+                                                          );
+                                                        }(),
+                                                      );
                                                     } else {
                                                       _model.chat =
                                                           await ChatTable()
@@ -665,6 +761,31 @@ class _NewConnectionsWidgetState extends State<NewConnectionsWidget> {
                                                                     0),
                                                           ),
                                                         },
+                                                      );
+
+                                                      unawaited(
+                                                        () async {
+                                                          await action_blocks
+                                                              .appTracking(
+                                                            context,
+                                                            userid: FFAppState()
+                                                                .currentUser
+                                                                .id,
+                                                            eventName:
+                                                                'abrir-chat',
+                                                            props: <String,
+                                                                dynamic>{
+                                                              'page':
+                                                                  'conexoes',
+                                                              'usuario-id':
+                                                                  listViewConexoesAceitasRow
+                                                                      .id,
+                                                              'usuario-nome':
+                                                                  listViewConexoesAceitasRow
+                                                                      .nome,
+                                                            },
+                                                          );
+                                                        }(),
                                                       );
                                                     }
 
@@ -747,7 +868,9 @@ class _NewConnectionsWidgetState extends State<NewConnectionsWidget> {
 
                             if (listViewConexoesAceitasRowList.isEmpty) {
                               return const Center(
-                                child: EmptyWidget(),
+                                child: EmptyWidget(
+                                  message: 'Nenhuma conexão encontrada.',
+                                ),
                               );
                             }
 
@@ -1106,7 +1229,9 @@ class _NewConnectionsWidgetState extends State<NewConnectionsWidget> {
 
                             if (listViewConexaoRowList.isEmpty) {
                               return const Center(
-                                child: EmptyWidget(),
+                                child: EmptyWidget(
+                                  message: 'Nenhuma solicitação encontrada.',
+                                ),
                               );
                             }
 

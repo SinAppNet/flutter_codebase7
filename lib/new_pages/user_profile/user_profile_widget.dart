@@ -5,8 +5,12 @@ import '/componentes/postagem/postagem_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import 'dart:async';
+import '/actions/actions.dart' as action_blocks;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
 import 'user_profile_model.dart';
 export 'user_profile_model.dart';
 
@@ -32,6 +36,25 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
     super.initState();
     _model = createModel(context, () => UserProfileModel());
 
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      unawaited(
+        () async {
+          await action_blocks.appTracking(
+            context,
+            userid: FFAppState().currentUser.id,
+            eventName: 'page-loaded',
+            pageName: 'perfil',
+            props: <String, dynamic>{
+              'page': 'perfil',
+              'usuario-id': widget.user?.id,
+              'usuario-nome': widget.user?.nome,
+            },
+          );
+        }(),
+      );
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
@@ -44,6 +67,8 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -741,7 +766,10 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
 
                                       if (columnFeedPostagensRowList.isEmpty) {
                                         return const Center(
-                                          child: EmptyWidget(),
+                                          child: EmptyWidget(
+                                            message:
+                                                'Nenhuma postagem encontrada.',
+                                          ),
                                         );
                                       }
 
@@ -811,6 +839,20 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
                       ),
                       onPressed: () async {
                         context.safePop();
+                        unawaited(
+                          () async {
+                            await action_blocks.appTracking(
+                              context,
+                              userid: FFAppState().currentUser.id,
+                              eventName: 'sair-perfil',
+                              props: <String, dynamic>{
+                                'page': 'perfil',
+                                'usuario-id': widget.user?.id,
+                                'usuario-nome': widget.user?.nome,
+                              },
+                            );
+                          }(),
+                        );
                       },
                     ),
                   ),
@@ -865,6 +907,21 @@ class _UserProfileWidgetState extends State<UserProfileWidget> {
                                 ParamType.SupabaseRow,
                               ),
                             }.withoutNulls,
+                          );
+
+                          unawaited(
+                            () async {
+                              await action_blocks.appTracking(
+                                context,
+                                userid: FFAppState().currentUser.id,
+                                eventName: 'editar-perfil',
+                                props: <String, dynamic>{
+                                  'page': 'perfil',
+                                  'usuario-id': widget.user?.id,
+                                  'usuario-nome': widget.user?.nome,
+                                },
+                              );
+                            }(),
                           );
 
                           safeSetState(() {});

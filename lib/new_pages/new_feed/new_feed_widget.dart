@@ -6,7 +6,10 @@ import '/componentes/write_post/write_post_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/new_pages/new_app_bar/new_app_bar_widget.dart';
+import 'dart:async';
+import '/actions/actions.dart' as action_blocks;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
@@ -29,6 +32,20 @@ class _NewFeedWidgetState extends State<NewFeedWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => NewFeedModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      unawaited(
+        () async {
+          await action_blocks.appTracking(
+            context,
+            userid: FFAppState().currentUser.id,
+            eventName: 'page-loaded',
+            pageName: 'feed',
+          );
+        }(),
+      );
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
@@ -76,25 +93,15 @@ class _NewFeedWidgetState extends State<NewFeedWidget> {
                       Padding(
                         padding:
                             const EdgeInsetsDirectional.fromSTEB(18.0, 0.0, 0.0, 0.0),
-                        child: InkWell(
-                          splashColor: Colors.transparent,
-                          focusColor: Colors.transparent,
-                          hoverColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                          onTap: () async {
-                            context.pushNamed('icons');
-                          },
-                          child: Text(
-                            'Feed',
-                            style: FlutterFlowTheme.of(context)
-                                .bodyMedium
-                                .override(
-                                  fontFamily: 'Inter',
-                                  fontSize: 32.0,
-                                  letterSpacing: 0.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
+                        child: Text(
+                          'Feed',
+                          style:
+                              FlutterFlowTheme.of(context).bodyMedium.override(
+                                    fontFamily: 'Inter',
+                                    fontSize: 32.0,
+                                    letterSpacing: 0.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ),
                       Padding(
@@ -143,6 +150,21 @@ class _NewFeedWidgetState extends State<NewFeedWidget> {
                                       ParamType.SupabaseRow,
                                     ),
                                   }.withoutNulls,
+                                );
+
+                                unawaited(
+                                  () async {
+                                    await action_blocks.appTracking(
+                                      context,
+                                      userid: FFAppState().currentUser.id,
+                                      eventName: 'perfil-visualizado',
+                                      props: <String, dynamic>{
+                                        'page': 'feed',
+                                        'usuario-id': containerUsersRow?.id,
+                                        'usuario-nome': containerUsersRow?.nome,
+                                      },
+                                    );
+                                  }(),
                                 );
                               },
                               child: Container(
@@ -203,6 +225,17 @@ class _NewFeedWidgetState extends State<NewFeedWidget> {
                                 );
                               },
                             ).then((value) => safeSetState(() {}));
+
+                            unawaited(
+                              () async {
+                                await action_blocks.appTracking(
+                                  context,
+                                  userid: FFAppState().currentUser.id,
+                                  eventName: 'escrever-post',
+                                  pageName: 'feed',
+                                );
+                              }(),
+                            );
                           },
                           child: Container(
                             width: 38.0,
@@ -260,7 +293,9 @@ class _NewFeedWidgetState extends State<NewFeedWidget> {
 
                           if (listViewFeedPostagensRowList.isEmpty) {
                             return const Center(
-                              child: EmptyWidget(),
+                              child: EmptyWidget(
+                                message: 'Nenhuma postagem no momento.',
+                              ),
                             );
                           }
 

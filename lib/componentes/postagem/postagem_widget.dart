@@ -4,8 +4,8 @@ import '/componentes/write_post/write_post_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import '/actions/actions.dart' as action_blocks;
 import 'dart:async';
+import '/actions/actions.dart' as action_blocks;
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -216,6 +216,14 @@ class _PostagemWidgetState extends State<PostagemWidget> {
                                                   .requestCompleter3 = null);
                                               await _model
                                                   .waitForRequestCompleted3();
+                                              safeSetState(() => _model
+                                                  .requestCompleter1 = null);
+                                              await _model
+                                                  .waitForRequestCompleted1();
+                                              safeSetState(() => _model
+                                                  .requestCompleter2 = null);
+                                              await _model
+                                                  .waitForRequestCompleted2();
                                             },
                                           ),
                                         ),
@@ -350,18 +358,16 @@ class _PostagemWidgetState extends State<PostagemWidget> {
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        StreamBuilder<List<FeedComentariosRow>>(
-                          stream: _model.containerSupabaseStream1 ??= SupaFlow
-                              .client
-                              .from("feed_comentarios")
-                              .stream(primaryKey: ['id'])
-                              .eqOrNull(
-                                'post',
-                                widget.feed?.id,
-                              )
-                              .map((list) => list
-                                  .map((item) => FeedComentariosRow(item))
-                                  .toList()),
+                        FutureBuilder<List<FeedComentariosRow>>(
+                          future: (_model.requestCompleter2 ??=
+                                  Completer<List<FeedComentariosRow>>()
+                                    ..complete(FeedComentariosTable().queryRows(
+                                      queryFn: (q) => q.eqOrNull(
+                                        'post',
+                                        widget.feed?.id,
+                                      ),
+                                    )))
+                              .future,
                           builder: (context, snapshot) {
                             // Customize what your widget looks like when it's loading.
                             if (!snapshot.hasData) {
@@ -438,17 +444,16 @@ class _PostagemWidgetState extends State<PostagemWidget> {
                             );
                           },
                         ),
-                        StreamBuilder<List<LikesRow>>(
-                          stream: _model.containerSupabaseStream2 ??= SupaFlow
-                              .client
-                              .from("likes")
-                              .stream(primaryKey: ['id'])
-                              .eqOrNull(
-                                'post',
-                                widget.feed?.id,
-                              )
-                              .map((list) =>
-                                  list.map((item) => LikesRow(item)).toList()),
+                        FutureBuilder<List<LikesRow>>(
+                          future: (_model.requestCompleter1 ??=
+                                  Completer<List<LikesRow>>()
+                                    ..complete(LikesTable().queryRows(
+                                      queryFn: (q) => q.eqOrNull(
+                                        'post',
+                                        widget.feed?.id,
+                                      ),
+                                    )))
+                              .future,
                           builder: (context, snapshot) {
                             // Customize what your widget looks like when it's loading.
                             if (!snapshot.hasData) {
@@ -492,6 +497,24 @@ class _PostagemWidgetState extends State<PostagemWidget> {
                                     message:
                                         '${FFAppState().currentUser.nome} acabou de curtir o seu post!',
                                   );
+                                  unawaited(
+                                    () async {
+                                      await action_blocks.appTracking(
+                                        context,
+                                        userid: FFAppState().currentUser.id,
+                                        eventName: 'like',
+                                        props: <String, dynamic>{
+                                          'page': 'post',
+                                          'post-id': widget.feed?.id,
+                                          'post-postador': widget.feed?.poster,
+                                        },
+                                      );
+                                    }(),
+                                  );
+                                  safeSetState(
+                                      () => _model.requestCompleter3 = null);
+                                  await _model.waitForRequestCompleted3();
+                                  await widget.callback?.call();
                                 } else {
                                   await LikesTable().delete(
                                     matchingRows: (rows) => rows
@@ -504,9 +527,25 @@ class _PostagemWidgetState extends State<PostagemWidget> {
                                           widget.feed?.id,
                                         ),
                                   );
+                                  unawaited(
+                                    () async {
+                                      await action_blocks.appTracking(
+                                        context,
+                                        userid: FFAppState().currentUser.id,
+                                        eventName: 'deslike',
+                                        props: <String, dynamic>{
+                                          'page': 'post',
+                                          'post-id': widget.feed?.id,
+                                          'post-postador': widget.feed?.poster,
+                                        },
+                                      );
+                                    }(),
+                                  );
+                                  safeSetState(
+                                      () => _model.requestCompleter3 = null);
+                                  await _model.waitForRequestCompleted3();
+                                  await widget.callback?.call();
                                 }
-
-                                await widget.callback?.call();
                               },
                               child: Container(
                                 decoration: const BoxDecoration(),

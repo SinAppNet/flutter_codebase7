@@ -6,10 +6,12 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/flutter_flow/form_field_controller.dart';
 import '/flutter_flow/upload_data.dart';
+import 'dart:async';
 import '/actions/actions.dart' as action_blocks;
 import '/flutter_flow/permissions_util.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:webviewx_plus/webviewx_plus.dart';
@@ -40,6 +42,20 @@ class _EditPersonalInfoWidgetState extends State<EditPersonalInfoWidget>
   void initState() {
     super.initState();
     _model = createModel(context, () => EditPersonalInfoModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      unawaited(
+        () async {
+          await action_blocks.appTracking(
+            context,
+            userid: FFAppState().currentUser.id,
+            eventName: 'page-loaded',
+            pageName: 'editor-perfil',
+          );
+        }(),
+      );
+    });
 
     _model.tabBarController = TabController(
       vsync: this,
@@ -1369,6 +1385,35 @@ class _EditPersonalInfoWidgetState extends State<EditPersonalInfoWidget>
                                                         curve: Curves.ease,
                                                       );
                                                     });
+
+                                                    unawaited(
+                                                      () async {
+                                                        await action_blocks
+                                                            .appTracking(
+                                                          context,
+                                                          userid: FFAppState()
+                                                              .currentUser
+                                                              .id,
+                                                          eventName:
+                                                              'info-pessoal-editada',
+                                                        );
+                                                      }(),
+                                                    );
+                                                    unawaited(
+                                                      () async {
+                                                        await action_blocks
+                                                            .appTracking(
+                                                          context,
+                                                          userid: FFAppState()
+                                                              .currentUser
+                                                              .id,
+                                                          eventName:
+                                                              'tab-loaded',
+                                                          pageName:
+                                                              'info-empresarial',
+                                                        );
+                                                      }(),
+                                                    );
                                                   } else {
                                                     await showDialog(
                                                       context: context,
@@ -1405,6 +1450,20 @@ class _EditPersonalInfoWidgetState extends State<EditPersonalInfoWidget>
                                                     );
 
                                                     context.goNamed('newHome');
+
+                                                    unawaited(
+                                                      () async {
+                                                        await action_blocks
+                                                            .appTracking(
+                                                          context,
+                                                          userid: FFAppState()
+                                                              .currentUser
+                                                              .id,
+                                                          eventName:
+                                                              'info-pessoal-editada',
+                                                        );
+                                                      }(),
+                                                    );
                                                   }
 
                                                   safeSetState(() {});
@@ -2456,6 +2515,20 @@ class _EditPersonalInfoWidgetState extends State<EditPersonalInfoWidget>
 
                                                         context
                                                             .goNamed('newHome');
+
+                                                        unawaited(
+                                                          () async {
+                                                            await action_blocks
+                                                                .appTracking(
+                                                              context,
+                                                              userid: FFAppState()
+                                                                  .currentUser
+                                                                  .id,
+                                                              eventName:
+                                                                  'info-empresarial-editada',
+                                                            );
+                                                          }(),
+                                                        );
                                                       } else {
                                                         await showDialog(
                                                           context: context,
@@ -2492,6 +2565,35 @@ class _EditPersonalInfoWidgetState extends State<EditPersonalInfoWidget>
                                                             curve: Curves.ease,
                                                           );
                                                         });
+
+                                                        unawaited(
+                                                          () async {
+                                                            await action_blocks
+                                                                .appTracking(
+                                                              context,
+                                                              userid: FFAppState()
+                                                                  .currentUser
+                                                                  .id,
+                                                              eventName:
+                                                                  'info-empresarial-editada',
+                                                            );
+                                                          }(),
+                                                        );
+                                                        unawaited(
+                                                          () async {
+                                                            await action_blocks
+                                                                .appTracking(
+                                                              context,
+                                                              userid: FFAppState()
+                                                                  .currentUser
+                                                                  .id,
+                                                              eventName:
+                                                                  'tab-loaded',
+                                                              pageName:
+                                                                  'info-pessoal',
+                                                            );
+                                                          }(),
+                                                        );
                                                       }
 
                                                       safeSetState(() {});

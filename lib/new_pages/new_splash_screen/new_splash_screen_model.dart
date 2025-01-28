@@ -7,11 +7,6 @@ class NewSplashScreenModel extends FlutterFlowModel<NewSplashScreenWidget> {
 
   String? fcmt;
 
-  ///  State fields for stateful widgets in this page.
-
-  // Stores action output result for [Custom Action - getFCMToken] action in RichText widget.
-  String? fcmtk;
-
   @override
   void initState(BuildContext context) {}
 

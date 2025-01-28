@@ -15,9 +15,9 @@ class NewChatModel extends FlutterFlowModel<NewChatWidget> {
 
   ///  State fields for stateful widgets in this page.
 
-  Stream<List<MensagensRow>>? containerSupabaseStream;
   // State field(s) for Mensagens widget.
   ScrollController? mensagens;
+  Stream<List<MensagensRow>>? mensagensSupabaseStream;
   // Model for initChatMessages component.
   late InitChatMessagesModel initChatMessagesModel;
   // Stores action output result for [Backend Call - Query Rows] action in Button widget.

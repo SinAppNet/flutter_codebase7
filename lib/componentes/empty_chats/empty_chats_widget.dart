@@ -1,9 +1,7 @@
-import '/componentes/contatos/contatos_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:webviewx_plus/webviewx_plus.dart';
 import 'empty_chats_model.dart';
 export 'empty_chats_model.dart';
 
@@ -74,7 +72,7 @@ class _EmptyChatsWidgetState extends State<EmptyChatsWidget> {
               Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(15.0, 40.0, 15.0, 0.0),
                 child: Text(
-                  'Você ainda não tem nenhum chat aberto, clique aqui para começar uma nova conversa',
+                  'Você ainda não tem nenhuma conexão ativa, clique aqui para começar uma nova!',
                   textAlign: TextAlign.center,
                   style: FlutterFlowTheme.of(context).bodyMedium.override(
                         fontFamily: 'Inter',
@@ -87,24 +85,9 @@ class _EmptyChatsWidgetState extends State<EmptyChatsWidget> {
                 padding: const EdgeInsetsDirectional.fromSTEB(25.0, 25.0, 25.0, 0.0),
                 child: FFButtonWidget(
                   onPressed: () async {
-                    await showModalBottomSheet(
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      context: context,
-                      builder: (context) {
-                        return WebViewAware(
-                          child: Padding(
-                            padding: MediaQuery.viewInsetsOf(context),
-                            child: SizedBox(
-                              height: MediaQuery.sizeOf(context).height * 0.5,
-                              child: const ContatosWidget(),
-                            ),
-                          ),
-                        );
-                      },
-                    ).then((value) => safeSetState(() {}));
+                    context.pushNamed('matchPage');
                   },
-                  text: 'Nova conversa',
+                  text: 'Nova conexão',
                   options: FFButtonOptions(
                     width: double.infinity,
                     height: 40.0,

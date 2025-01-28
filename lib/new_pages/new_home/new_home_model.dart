@@ -1,6 +1,7 @@
 import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/new_pages/new_app_bar/new_app_bar_widget.dart';
+import 'dart:async';
 import 'new_home_widget.dart' show NewHomeWidget;
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';

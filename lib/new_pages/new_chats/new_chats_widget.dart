@@ -1,10 +1,14 @@
 import '/backend/supabase/supabase.dart';
+import '/componentes/empty/empty_widget.dart';
 import '/componentes/empty_chats/empty_chats_widget.dart';
 import '/flutter_flow/flutter_flow_autocomplete_options_list.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/new_pages/new_app_bar/new_app_bar_widget.dart';
+import 'dart:async';
+import '/actions/actions.dart' as action_blocks;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'new_chats_model.dart';
@@ -27,6 +31,20 @@ class _NewChatsWidgetState extends State<NewChatsWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => NewChatsModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      unawaited(
+        () async {
+          await action_blocks.appTracking(
+            context,
+            userid: FFAppState().currentUser.id,
+            eventName: 'page-loaded',
+            pageName: 'chats',
+          );
+        }(),
+      );
+    });
 
     _model.pesquisaNomeTextController ??= TextEditingController();
 
@@ -320,6 +338,9 @@ class _NewChatsWidgetState extends State<NewChatsWidget> {
                 if (responsiveVisibility(
                   context: context,
                   phone: false,
+                  tablet: false,
+                  tabletLandscape: false,
+                  desktop: false,
                 ))
                   Padding(
                     padding:
@@ -534,6 +555,28 @@ class _NewChatsWidgetState extends State<NewChatsWidget> {
                                                     ),
                                                   },
                                                 );
+
+                                                unawaited(
+                                                  () async {
+                                                    await action_blocks
+                                                        .appTracking(
+                                                      context,
+                                                      userid: FFAppState()
+                                                          .currentUser
+                                                          .id,
+                                                      eventName: 'abrir-chat',
+                                                      props: <String, dynamic>{
+                                                        'page': 'chats',
+                                                        'usuario-id':
+                                                            containerUsersRow
+                                                                ?.id,
+                                                        'usuario-nome':
+                                                            containerUsersRow
+                                                                ?.nome,
+                                                      },
+                                                    );
+                                                  }(),
+                                                );
                                               },
                                               child: Row(
                                                 mainAxisSize: MainAxisSize.max,
@@ -582,6 +625,31 @@ class _NewChatsWidgetState extends State<NewChatsWidget> {
                                                               ),
                                                             },
                                                           );
+
+                                                          unawaited(
+                                                            () async {
+                                                              await action_blocks
+                                                                  .appTracking(
+                                                                context,
+                                                                userid: FFAppState()
+                                                                    .currentUser
+                                                                    .id,
+                                                                eventName:
+                                                                    'perfil-visualizado',
+                                                                props: <String,
+                                                                    dynamic>{
+                                                                  'page':
+                                                                      'chats',
+                                                                  'usuario-id':
+                                                                      containerUsersRow
+                                                                          ?.id,
+                                                                  'usuario-nome':
+                                                                      containerUsersRow
+                                                                          ?.nome,
+                                                                },
+                                                              );
+                                                            }(),
+                                                          );
                                                         },
                                                         child: Container(
                                                           width: 62.0,
@@ -618,58 +686,57 @@ class _NewChatsWidgetState extends State<NewChatsWidget> {
                                                                     0.0,
                                                                     0.0,
                                                                     0.0),
-                                                        child: InkWell(
-                                                          splashColor: Colors
-                                                              .transparent,
-                                                          focusColor: Colors
-                                                              .transparent,
-                                                          hoverColor: Colors
-                                                              .transparent,
-                                                          highlightColor: Colors
-                                                              .transparent,
-                                                          onTap: () async {
-                                                            context.pushNamed(
-                                                              'newChat',
-                                                              queryParameters: {
-                                                                'chat':
-                                                                    serializeParam(
-                                                                  listViewChatRow,
-                                                                  ParamType
-                                                                      .SupabaseRow,
-                                                                ),
-                                                              }.withoutNulls,
-                                                              extra: <String,
-                                                                  dynamic>{
-                                                                kTransitionInfoKey:
-                                                                    const TransitionInfo(
-                                                                  hasTransition:
-                                                                      true,
-                                                                  transitionType:
-                                                                      PageTransitionType
-                                                                          .fade,
-                                                                  duration: Duration(
-                                                                      milliseconds:
-                                                                          0),
-                                                                ),
-                                                              },
-                                                            );
-                                                          },
-                                                          child: Column(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Text(
+                                                        child: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              valueOrDefault<
+                                                                  String>(
+                                                                containerUsersRow
+                                                                    ?.nome,
+                                                                'Username',
+                                                              ).maybeHandleOverflow(
+                                                                maxChars: 18,
+                                                                replacement:
+                                                                    '…',
+                                                              ),
+                                                              style: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .bodyMedium
+                                                                  .override(
+                                                                    fontFamily:
+                                                                        'Inter',
+                                                                    color: const Color(
+                                                                        0xFF101828),
+                                                                    fontSize:
+                                                                        18.0,
+                                                                    letterSpacing:
+                                                                        0.0,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                  ),
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsetsDirectional
+                                                                      .fromSTEB(
+                                                                          0.0,
+                                                                          2.0,
+                                                                          0.0,
+                                                                          0.0),
+                                                              child: Text(
                                                                 valueOrDefault<
                                                                     String>(
-                                                                  containerUsersRow
-                                                                      ?.nome,
-                                                                  'Username',
+                                                                  listViewChatRow
+                                                                      .lastMessage,
+                                                                  'Ultima mensagem',
                                                                 ).maybeHandleOverflow(
-                                                                  maxChars: 18,
+                                                                  maxChars: 25,
                                                                   replacement:
                                                                       '…',
                                                                 ),
@@ -682,7 +749,7 @@ class _NewChatsWidgetState extends State<NewChatsWidget> {
                                                                       color: const Color(
                                                                           0xFF101828),
                                                                       fontSize:
-                                                                          18.0,
+                                                                          12.0,
                                                                       letterSpacing:
                                                                           0.0,
                                                                       fontWeight:
@@ -690,45 +757,8 @@ class _NewChatsWidgetState extends State<NewChatsWidget> {
                                                                               .w600,
                                                                     ),
                                                               ),
-                                                              Padding(
-                                                                padding:
-                                                                    const EdgeInsetsDirectional
-                                                                        .fromSTEB(
-                                                                            0.0,
-                                                                            2.0,
-                                                                            0.0,
-                                                                            0.0),
-                                                                child: Text(
-                                                                  valueOrDefault<
-                                                                      String>(
-                                                                    listViewChatRow
-                                                                        .lastMessage,
-                                                                    'Ultima mensagem',
-                                                                  ).maybeHandleOverflow(
-                                                                    maxChars:
-                                                                        25,
-                                                                    replacement:
-                                                                        '…',
-                                                                  ),
-                                                                  style: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodyMedium
-                                                                      .override(
-                                                                        fontFamily:
-                                                                            'Inter',
-                                                                        color: const Color(
-                                                                            0xFF101828),
-                                                                        fontSize:
-                                                                            12.0,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                        fontWeight:
-                                                                            FontWeight.w600,
-                                                                      ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
+                                                            ),
+                                                          ],
                                                         ),
                                                       ),
                                                     ],
@@ -904,7 +934,9 @@ class _NewChatsWidgetState extends State<NewChatsWidget> {
 
                             if (listViewChatRowList.isEmpty) {
                               return const Center(
-                                child: EmptyChatsWidget(),
+                                child: EmptyWidget(
+                                  message: 'Nenhum chat encontrado.',
+                                ),
                               );
                             }
 
@@ -991,6 +1023,28 @@ class _NewChatsWidgetState extends State<NewChatsWidget> {
                                                     ),
                                                   },
                                                 );
+
+                                                unawaited(
+                                                  () async {
+                                                    await action_blocks
+                                                        .appTracking(
+                                                      context,
+                                                      userid: FFAppState()
+                                                          .currentUser
+                                                          .id,
+                                                      eventName: 'abrir-chat',
+                                                      props: <String, dynamic>{
+                                                        'page': 'chats',
+                                                        'usuario-id':
+                                                            containerUsersRow
+                                                                ?.id,
+                                                        'usuario-nome':
+                                                            containerUsersRow
+                                                                ?.nome,
+                                                      },
+                                                    );
+                                                  }(),
+                                                );
                                               },
                                               child: Row(
                                                 mainAxisSize: MainAxisSize.max,
@@ -1039,6 +1093,31 @@ class _NewChatsWidgetState extends State<NewChatsWidget> {
                                                               ),
                                                             },
                                                           );
+
+                                                          unawaited(
+                                                            () async {
+                                                              await action_blocks
+                                                                  .appTracking(
+                                                                context,
+                                                                userid: FFAppState()
+                                                                    .currentUser
+                                                                    .id,
+                                                                eventName:
+                                                                    'perfil-visualizado',
+                                                                props: <String,
+                                                                    dynamic>{
+                                                                  'page':
+                                                                      'chats',
+                                                                  'usuario-id':
+                                                                      containerUsersRow
+                                                                          ?.id,
+                                                                  'usuario-nome':
+                                                                      containerUsersRow
+                                                                          ?.nome,
+                                                                },
+                                                              );
+                                                            }(),
+                                                          );
                                                         },
                                                         child: Container(
                                                           width: 62.0,
@@ -1075,58 +1154,57 @@ class _NewChatsWidgetState extends State<NewChatsWidget> {
                                                                     0.0,
                                                                     0.0,
                                                                     0.0),
-                                                        child: InkWell(
-                                                          splashColor: Colors
-                                                              .transparent,
-                                                          focusColor: Colors
-                                                              .transparent,
-                                                          hoverColor: Colors
-                                                              .transparent,
-                                                          highlightColor: Colors
-                                                              .transparent,
-                                                          onTap: () async {
-                                                            context.pushNamed(
-                                                              'newChat',
-                                                              queryParameters: {
-                                                                'chat':
-                                                                    serializeParam(
-                                                                  listViewChatRow,
-                                                                  ParamType
-                                                                      .SupabaseRow,
-                                                                ),
-                                                              }.withoutNulls,
-                                                              extra: <String,
-                                                                  dynamic>{
-                                                                kTransitionInfoKey:
-                                                                    const TransitionInfo(
-                                                                  hasTransition:
-                                                                      true,
-                                                                  transitionType:
-                                                                      PageTransitionType
-                                                                          .fade,
-                                                                  duration: Duration(
-                                                                      milliseconds:
-                                                                          0),
-                                                                ),
-                                                              },
-                                                            );
-                                                          },
-                                                          child: Column(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Text(
+                                                        child: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              valueOrDefault<
+                                                                  String>(
+                                                                containerUsersRow
+                                                                    ?.nome,
+                                                                'Username',
+                                                              ).maybeHandleOverflow(
+                                                                maxChars: 18,
+                                                                replacement:
+                                                                    '…',
+                                                              ),
+                                                              style: FlutterFlowTheme
+                                                                      .of(context)
+                                                                  .bodyMedium
+                                                                  .override(
+                                                                    fontFamily:
+                                                                        'Inter',
+                                                                    color: const Color(
+                                                                        0xFF101828),
+                                                                    fontSize:
+                                                                        18.0,
+                                                                    letterSpacing:
+                                                                        0.0,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                  ),
+                                                            ),
+                                                            Padding(
+                                                              padding:
+                                                                  const EdgeInsetsDirectional
+                                                                      .fromSTEB(
+                                                                          0.0,
+                                                                          2.0,
+                                                                          0.0,
+                                                                          0.0),
+                                                              child: Text(
                                                                 valueOrDefault<
                                                                     String>(
-                                                                  containerUsersRow
-                                                                      ?.nome,
-                                                                  'Username',
+                                                                  listViewChatRow
+                                                                      .lastMessage,
+                                                                  'Ultima mensagem',
                                                                 ).maybeHandleOverflow(
-                                                                  maxChars: 18,
+                                                                  maxChars: 25,
                                                                   replacement:
                                                                       '…',
                                                                 ),
@@ -1139,7 +1217,7 @@ class _NewChatsWidgetState extends State<NewChatsWidget> {
                                                                       color: const Color(
                                                                           0xFF101828),
                                                                       fontSize:
-                                                                          18.0,
+                                                                          12.0,
                                                                       letterSpacing:
                                                                           0.0,
                                                                       fontWeight:
@@ -1147,45 +1225,8 @@ class _NewChatsWidgetState extends State<NewChatsWidget> {
                                                                               .w600,
                                                                     ),
                                                               ),
-                                                              Padding(
-                                                                padding:
-                                                                    const EdgeInsetsDirectional
-                                                                        .fromSTEB(
-                                                                            0.0,
-                                                                            2.0,
-                                                                            0.0,
-                                                                            0.0),
-                                                                child: Text(
-                                                                  valueOrDefault<
-                                                                      String>(
-                                                                    listViewChatRow
-                                                                        .lastMessage,
-                                                                    'Ultima mensagem',
-                                                                  ).maybeHandleOverflow(
-                                                                    maxChars:
-                                                                        25,
-                                                                    replacement:
-                                                                        '…',
-                                                                  ),
-                                                                  style: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodyMedium
-                                                                      .override(
-                                                                        fontFamily:
-                                                                            'Inter',
-                                                                        color: const Color(
-                                                                            0xFF101828),
-                                                                        fontSize:
-                                                                            12.0,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                        fontWeight:
-                                                                            FontWeight.w600,
-                                                                      ),
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
+                                                            ),
+                                                          ],
                                                         ),
                                                       ),
                                                     ],
@@ -1255,9 +1296,10 @@ class _NewChatsWidgetState extends State<NewChatsWidget> {
                                                                     "relative",
                                                                     textMensagensRow
                                                                         ?.createdAt,
-                                                                    locale: FFLocalizations.of(
-                                                                            context)
-                                                                        .languageCode,
+                                                                    locale: FFLocalizations.of(context)
+                                                                            .languageShortCode ??
+                                                                        FFLocalizations.of(context)
+                                                                            .languageCode,
                                                                   ),
                                                                   'Há 1 hora',
                                                                 ),

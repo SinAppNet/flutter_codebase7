@@ -3,6 +3,7 @@ import '/backend/api_requests/api_calls.dart';
 import '/backend/schema/structs/index.dart';
 import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import 'dart:async';
 import '/custom_code/actions/index.dart' as actions;
 import 'package:flutter/material.dart';
 
@@ -73,4 +74,49 @@ Future sendPush(
     pushTitle: title,
     pushMessage: message,
   );
+}
+
+Future appTracking(
+  BuildContext context, {
+  int? userid,
+  String? eventName,
+  String? pageName,
+  dynamic props,
+}) async {
+  ApiCallResponse? apiResult5sa;
+  ApiCallResponse? apiResultpgc;
+  ApiCallResponse? apiResult5saza;
+
+  if (pageName != null && pageName != '') {
+    unawaited(
+      () async {
+        apiResult5sa = await SegmentGroup.trackingCall.call(
+          userId: userid,
+          eventName: eventName,
+          timestamp: getCurrentTimestamp.toString(),
+          propsJson: props,
+        );
+      }(),
+    );
+    unawaited(
+      () async {
+        apiResultpgc = await SegmentGroup.pageCall.call(
+          userId: userid,
+          pageName: pageName,
+          timestamp: getCurrentTimestamp.toString(),
+        );
+      }(),
+    );
+  } else {
+    unawaited(
+      () async {
+        apiResult5saza = await SegmentGroup.trackingCall.call(
+          userId: userid,
+          eventName: eventName,
+          timestamp: getCurrentTimestamp.toString(),
+          propsJson: props,
+        );
+      }(),
+    );
+  }
 }

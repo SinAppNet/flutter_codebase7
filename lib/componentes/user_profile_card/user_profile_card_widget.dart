@@ -2,8 +2,11 @@ import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import 'dart:async';
+import '/actions/actions.dart' as action_blocks;
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:provider/provider.dart';
 import 'user_profile_card_model.dart';
 export 'user_profile_card_model.dart';
 
@@ -49,6 +52,8 @@ class _UserProfileCardWidgetState extends State<UserProfileCardWidget> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
     return InkWell(
       splashColor: Colors.transparent,
       focusColor: Colors.transparent,
@@ -77,6 +82,21 @@ class _UserProfileCardWidgetState extends State<UserProfileCardWidget> {
               duration: Duration(milliseconds: 0),
             ),
           },
+        );
+
+        unawaited(
+          () async {
+            await action_blocks.appTracking(
+              context,
+              userid: FFAppState().currentUser.id,
+              eventName: 'perfil-visualizado',
+              props: <String, dynamic>{
+                'page': 'central-conexoes',
+                'usuario-id': widget.user?.id,
+                'usuario-nome': widget.user?.nome,
+              },
+            );
+          }(),
         );
 
         safeSetState(() {});
@@ -467,6 +487,21 @@ class _UserProfileCardWidgetState extends State<UserProfileCardWidget> {
                                     duration: Duration(milliseconds: 0),
                                   ),
                                 },
+                              );
+
+                              unawaited(
+                                () async {
+                                  await action_blocks.appTracking(
+                                    context,
+                                    userid: FFAppState().currentUser.id,
+                                    eventName: 'perfil-visualizado',
+                                    props: <String, dynamic>{
+                                      'page': 'central-conexoes',
+                                      'usuario-id': widget.user?.id,
+                                      'usuario-nome': widget.user?.nome,
+                                    },
+                                  );
+                                }(),
                               );
 
                               safeSetState(() {});

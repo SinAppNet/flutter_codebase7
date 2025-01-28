@@ -3,8 +3,11 @@ import '/flutter_flow/flutter_flow_animations.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:async';
+import '/actions/actions.dart' as action_blocks;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
 import 'logout_model.dart';
 export 'logout_model.dart';
 
@@ -73,6 +76,8 @@ class _LogoutWidgetState extends State<LogoutWidget>
 
   @override
   Widget build(BuildContext context) {
+    context.watch<FFAppState>();
+
     return Align(
       alignment: const AlignmentDirectional(0.0, 0.0),
       child: Padding(
@@ -195,6 +200,16 @@ class _LogoutWidgetState extends State<LogoutWidget>
                                   GoRouter.of(context).prepareAuthEvent();
                                   await authManager.signOut();
                                   GoRouter.of(context).clearRedirectLocation();
+
+                                  unawaited(
+                                    () async {
+                                      await action_blocks.appTracking(
+                                        context,
+                                        userid: FFAppState().currentUser.id,
+                                        eventName: 'logout',
+                                      );
+                                    }(),
+                                  );
 
                                   context.goNamedAuth(
                                       'newSplashScreen', context.mounted);

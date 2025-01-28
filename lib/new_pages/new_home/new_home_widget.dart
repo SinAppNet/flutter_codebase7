@@ -10,6 +10,7 @@ import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import '/new_pages/new_app_bar/new_app_bar_widget.dart';
 import '/new_pages/trial_ended_message/trial_ended_message_widget.dart';
+import 'dart:async';
 import '/actions/actions.dart' as action_blocks;
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:carousel_slider/carousel_slider.dart';
@@ -122,6 +123,19 @@ class _NewHomeWidgetState extends State<NewHomeWidget> {
             } else {
               return;
             }
+          }),
+          Future(() async {
+            unawaited(
+              () async {
+                await action_blocks.appTracking(
+                  context,
+                  userid: FFAppState().currentUser.id,
+                  eventName: 'page-loaded',
+                  pageName: 'home-page',
+                );
+              }(),
+            );
+            return;
           }),
         ]);
       } else {
@@ -458,6 +472,22 @@ class _NewHomeWidgetState extends State<NewHomeWidget> {
                                         ),
                                       }.withoutNulls,
                                     );
+
+                                    unawaited(
+                                      () async {
+                                        await action_blocks.appTracking(
+                                          context,
+                                          userid: FFAppState().currentUser.id,
+                                          eventName: 'perfil-visualizado',
+                                          props: <String, dynamic>{
+                                            'page': 'perfil',
+                                            'usuario-id': containerUsersRow?.id,
+                                            'usuario-nome':
+                                                containerUsersRow?.nome,
+                                          },
+                                        );
+                                      }(),
+                                    );
                                   },
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -494,6 +524,15 @@ class _NewHomeWidgetState extends State<NewHomeWidget> {
                                   onTap: () async {
                                     await launchURL(
                                         'https://api.whatsapp.com/send?phone=5544998640309&text=Ol%C3%A1,%20gostaria%20de%20um%20suporte%20referente%20ao%20Sinapp!');
+                                    unawaited(
+                                      () async {
+                                        await action_blocks.appTracking(
+                                          context,
+                                          userid: FFAppState().currentUser.id,
+                                          eventName: 'go-support',
+                                        );
+                                      }(),
+                                    );
                                   },
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -564,53 +603,56 @@ class _NewHomeWidgetState extends State<NewHomeWidget> {
                                   ),
                                 ),
                               ),
-                              if (responsiveVisibility(
-                                context: context,
-                                tablet: false,
-                                tabletLandscape: false,
-                                desktop: false,
-                              ))
-                                Builder(
-                                  builder: (context) => Padding(
-                                    padding: const EdgeInsetsDirectional.fromSTEB(
-                                        21.0, 18.0, 0.0, 0.0),
-                                    child: InkWell(
-                                      splashColor: Colors.transparent,
-                                      focusColor: Colors.transparent,
-                                      hoverColor: Colors.transparent,
-                                      highlightColor: Colors.transparent,
-                                      onTap: () async {
-                                        await Share.share(
-                                          'Olá! Faço parte do SinApp, um app de network para empresarios, clique no link para baixar: https://sinapp.tech/linkspage',
-                                          sharePositionOrigin:
-                                              getWidgetBoundingBox(context),
-                                        );
-                                      },
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            FFIcons.kpresente,
-                                            color: FlutterFlowTheme.of(context)
-                                                .primaryText,
-                                            size: 28.0,
-                                          ),
-                                          Text(
-                                            'Convidar um amigo',
-                                            style: FlutterFlowTheme.of(context)
-                                                .bodyMedium
-                                                .override(
-                                                  fontFamily: 'Inter',
-                                                  fontSize: 18.0,
-                                                  letterSpacing: 0.0,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                          ),
-                                        ].divide(const SizedBox(width: 8.0)),
-                                      ),
+                              Builder(
+                                builder: (context) => Padding(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
+                                      21.0, 18.0, 0.0, 0.0),
+                                  child: InkWell(
+                                    splashColor: Colors.transparent,
+                                    focusColor: Colors.transparent,
+                                    hoverColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    onTap: () async {
+                                      await Share.share(
+                                        'Olá! Faço parte do SinApp, um app de network para empresarios, clique no link para baixar: https://sinapp.tech/linkspage',
+                                        sharePositionOrigin:
+                                            getWidgetBoundingBox(context),
+                                      );
+                                      unawaited(
+                                        () async {
+                                          await action_blocks.appTracking(
+                                            context,
+                                            userid: FFAppState().currentUser.id,
+                                            eventName: 'share',
+                                          );
+                                        }(),
+                                      );
+                                    },
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          FFIcons.kpresente,
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryText,
+                                          size: 28.0,
+                                        ),
+                                        Text(
+                                          'Convidar um amigo',
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodyMedium
+                                              .override(
+                                                fontFamily: 'Inter',
+                                                fontSize: 18.0,
+                                                letterSpacing: 0.0,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                        ),
+                                      ].divide(const SizedBox(width: 8.0)),
                                     ),
                                   ),
                                 ),
+                              ),
                               Builder(
                                 builder: (context) => Padding(
                                   padding: const EdgeInsetsDirectional.fromSTEB(
@@ -847,6 +889,26 @@ class _NewHomeWidgetState extends State<NewHomeWidget> {
                                                 ),
                                               }.withoutNulls,
                                             );
+
+                                            unawaited(
+                                              () async {
+                                                await action_blocks.appTracking(
+                                                  context,
+                                                  userid: FFAppState()
+                                                      .currentUser
+                                                      .id,
+                                                  eventName:
+                                                      'perfil-visualizado',
+                                                  props: <String, dynamic>{
+                                                    'page': 'perfil',
+                                                    'usuario-id':
+                                                        containerUsersRow?.id,
+                                                    'usuario-nome':
+                                                        containerUsersRow?.nome,
+                                                  },
+                                                );
+                                              }(),
+                                            );
                                           },
                                           child: Container(
                                             width: 50.0,
@@ -932,6 +994,16 @@ class _NewHomeWidgetState extends State<NewHomeWidget> {
                                       highlightColor: Colors.transparent,
                                       onTap: () async {
                                         scaffoldKey.currentState!.openDrawer();
+                                        unawaited(
+                                          () async {
+                                            await action_blocks.appTracking(
+                                              context,
+                                              userid:
+                                                  FFAppState().currentUser.id,
+                                              eventName: 'menu-opened',
+                                            );
+                                          }(),
+                                        );
                                       },
                                       child: Icon(
                                         Icons.menu,
@@ -1195,6 +1267,17 @@ class _NewHomeWidgetState extends State<NewHomeWidget> {
                                           }.withoutNulls,
                                         );
 
+                                        unawaited(
+                                          () async {
+                                            await action_blocks.appTracking(
+                                              context,
+                                              userid:
+                                                  FFAppState().currentUser.id,
+                                              eventName: 'editar-perfil',
+                                            );
+                                          }(),
+                                        );
+
                                         safeSetState(() {});
                                       },
                                       child: Container(
@@ -1317,7 +1400,10 @@ class _NewHomeWidgetState extends State<NewHomeWidget> {
 
                                     if (columnFeedPostagensRowList.isEmpty) {
                                       return const Center(
-                                        child: EmptyWidget(),
+                                        child: EmptyWidget(
+                                          message:
+                                              'Nenhuma postagem em destaque.',
+                                        ),
                                       );
                                     }
 
@@ -1357,6 +1443,16 @@ class _NewHomeWidgetState extends State<NewHomeWidget> {
                                     highlightColor: Colors.transparent,
                                     onTap: () async {
                                       context.goNamed('newFeed');
+
+                                      unawaited(
+                                        () async {
+                                          await action_blocks.appTracking(
+                                            context,
+                                            userid: FFAppState().currentUser.id,
+                                            eventName: 'mais-feed',
+                                          );
+                                        }(),
+                                      );
                                     },
                                     child: Text(
                                       'Ver mais publicações',

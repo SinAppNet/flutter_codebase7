@@ -5,7 +5,6 @@ import '/flutter_flow/flutter_flow_util.dart';
 import 'dart:async';
 import 'chat_widget.dart' show ChatWidget;
 import 'package:flutter/material.dart';
-import 'package:record/record.dart';
 
 class ChatModel extends FlutterFlowModel<ChatWidget> {
   ///  Local state fields for this page.
@@ -22,13 +21,11 @@ class ChatModel extends FlutterFlowModel<ChatWidget> {
 
   // Model for appBar component.
   late AppBarModel appBarModel;
-  Stream<List<MensagensRow>>? containerSupabaseStream;
   // State field(s) for Mensagens widget.
   ScrollController? mensagens;
+  Stream<List<MensagensRow>>? mensagensSupabaseStream;
   // Model for initChatMessages component.
   late InitChatMessagesModel initChatMessagesModel;
-  // Stores action output result for [Backend Call - Query Rows] action in Button widget.
-  List<MensagensRow>? msgsCopy;
   // State field(s) for TextField widget.
   FocusNode? textFieldFocusNode;
   TextEditingController? textController;
@@ -39,10 +36,6 @@ class ChatModel extends FlutterFlowModel<ChatWidget> {
   List<UsersRow>? user1;
   // Stores action output result for [Backend Call - Query Rows] action in Icon widget.
   List<UsersRow>? user2;
-  AudioRecorder? audioRecorder;
-  String? stopped;
-  FFUploadedFile recordedFileBytes =
-      FFUploadedFile(bytes: Uint8List.fromList([]));
 
   @override
   void initState(BuildContext context) {

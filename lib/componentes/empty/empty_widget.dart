@@ -6,7 +6,12 @@ import 'empty_model.dart';
 export 'empty_model.dart';
 
 class EmptyWidget extends StatefulWidget {
-  const EmptyWidget({super.key});
+  const EmptyWidget({
+    super.key,
+    String? message,
+  }) : message = message ?? 'Nenhum resultado encontrado.';
+
+  final String message;
 
   @override
   State<EmptyWidget> createState() => _EmptyWidgetState();
@@ -56,7 +61,7 @@ class _EmptyWidgetState extends State<EmptyWidget> {
           Padding(
             padding: const EdgeInsetsDirectional.fromSTEB(0.0, 10.0, 0.0, 0.0),
             child: Text(
-              'Nenhum resultado.',
+              widget.message,
               style: FlutterFlowTheme.of(context).bodyMedium.override(
                     fontFamily: 'Inter',
                     letterSpacing: 0.0,

@@ -74,6 +74,8 @@ class SegmentGroup {
     'Content-Type': 'application/json',
   };
   static TrackingCall trackingCall = TrackingCall();
+  static IdentifyCall identifyCall = IdentifyCall();
+  static PageCall pageCall = PageCall();
 }
 
 class TrackingCall {
@@ -82,9 +84,11 @@ class TrackingCall {
     String? eventName = '',
     String? timestamp = '',
     String? writeKey = 'JK5WJ6o6LxKEytfoQVNDEaw1n35vmLK7',
+    dynamic propsJson,
   }) async {
     final baseUrl = SegmentGroup.getBaseUrl();
 
+    final props = _serializeJson(propsJson);
     final ffApiRequestBody = '''
 {
   "userId": "$userId",
@@ -92,12 +96,96 @@ class TrackingCall {
   "context": {
     "ip": "24.5.68.47"
   },
+  "properties": $props,
   "timestamp": "${escapeStringForJson(timestamp)}",
   "writeKey": "${escapeStringForJson(writeKey)}"
 }''';
     return ApiManager.instance.makeApiCall(
       callName: 'tracking',
       apiUrl: '$baseUrl/track',
+      callType: ApiCallType.POST,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class IdentifyCall {
+  Future<ApiCallResponse> call({
+    int? userId,
+    String? writeK = 'JK5WJ6o6LxKEytfoQVNDEaw1n35vmLK7',
+    String? email = '',
+    String? name = '',
+    String? databaseUuid = '',
+    String? timestamp = '',
+    String? whatsapp = '',
+  }) async {
+    final baseUrl = SegmentGroup.getBaseUrl();
+
+    final ffApiRequestBody = '''
+{
+  "userId": $userId,
+  "traits": {
+    "email": "${escapeStringForJson(email)}",
+    "name": "${escapeStringForJson(name)}",
+    "whatsapp": "${escapeStringForJson(whatsapp)}",
+    "db_uuid": "${escapeStringForJson(databaseUuid)}"
+  },
+  "context": {
+    "ip": "24.5.68.47"
+  },
+  "timestamp": "${escapeStringForJson(timestamp)}",
+  "writeKey": "${escapeStringForJson(writeK)}"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'identify',
+      apiUrl: '$baseUrl/identify',
+      callType: ApiCallType.POST,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+}
+
+class PageCall {
+  Future<ApiCallResponse> call({
+    int? userId,
+    String? pageName = '',
+    String? writeK = 'JK5WJ6o6LxKEytfoQVNDEaw1n35vmLK7',
+    String? timestamp = '',
+  }) async {
+    final baseUrl = SegmentGroup.getBaseUrl();
+
+    final ffApiRequestBody = '''
+{
+  "userId": $userId,
+  "name": "${escapeStringForJson(pageName)}",
+  "timestamp": "${escapeStringForJson(timestamp)}",
+  "writeKey": "${escapeStringForJson(writeK)}"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'page',
+      apiUrl: '$baseUrl/page',
       callType: ApiCallType.POST,
       headers: {
         'Content-Type': 'application/json',

@@ -559,7 +559,9 @@ class _NotificacoesWidgetState extends State<NotificacoesWidget>
                                               if (listViewConexaoRowList
                                                   .isEmpty) {
                                                 return const Center(
-                                                  child: EmptyWidget(),
+                                                  child: EmptyWidget(
+                                                    message: 'a',
+                                                  ),
                                                 );
                                               }
 

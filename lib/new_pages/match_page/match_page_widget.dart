@@ -7,8 +7,10 @@ import '/flutter_flow/flutter_flow_swipeable_stack.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:async';
 import '/actions/actions.dart' as action_blocks;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -41,6 +43,23 @@ class _MatchPageWidgetState extends State<MatchPageWidget>
   void initState() {
     super.initState();
     _model = createModel(context, () => MatchPageModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      unawaited(
+        () async {
+          await action_blocks.appTracking(
+            context,
+            userid: FFAppState().currentUser.id,
+            eventName: 'page-loaded',
+            pageName: 'central-conexoes',
+            props: <String, dynamic>{
+              'page': 'central-conexoes',
+            },
+          );
+        }(),
+      );
+    });
 
     animationsMap.addAll({
       'containerOnPageLoadAnimation': AnimationInfo(
@@ -112,7 +131,26 @@ class _MatchPageWidgetState extends State<MatchPageWidget>
 
                 return FlutterFlowSwipeableStack(
                   onSwipeFn: (index) {},
-                  onLeftSwipe: (index) {},
+                  onLeftSwipe: (index) async {
+                    final swipeableStackUsuariosSemConexoesRow =
+                        swipeableStackUsuariosSemConexoesRowList[index];
+                    unawaited(
+                      () async {
+                        await action_blocks.appTracking(
+                          context,
+                          userid: FFAppState().currentUser.id,
+                          eventName: 'usuario-ignorado',
+                          props: <String, dynamic>{
+                            'page': 'central-conexoes',
+                            'usuario-id':
+                                swipeableStackUsuariosSemConexoesRow.id,
+                            'usuario-nome':
+                                swipeableStackUsuariosSemConexoesRow.nome,
+                          },
+                        );
+                      }(),
+                    );
+                  },
                   onRightSwipe: (index) async {
                     final swipeableStackUsuariosSemConexoesRow =
                         swipeableStackUsuariosSemConexoesRowList[index];
@@ -129,6 +167,22 @@ class _MatchPageWidgetState extends State<MatchPageWidget>
                       title: 'Nova solicitação de conexão!',
                       message:
                           '${FFAppState().currentUser.nome} quer fazer uma conexão com você!',
+                    );
+                    unawaited(
+                      () async {
+                        await action_blocks.appTracking(
+                          context,
+                          userid: FFAppState().currentUser.id,
+                          eventName: 'conexao-solicitada',
+                          props: <String, dynamic>{
+                            'page': 'central-conexoes',
+                            'usuario-id':
+                                swipeableStackUsuariosSemConexoesRow.id,
+                            'usuario-nome':
+                                swipeableStackUsuariosSemConexoesRow.nome,
+                          },
+                        );
+                      }(),
                     );
                   },
                   onUpSwipe: (index) {},
@@ -182,6 +236,18 @@ class _MatchPageWidgetState extends State<MatchPageWidget>
                       ),
                       onPressed: () async {
                         _model.swipeableStackController.swipeLeft();
+                        unawaited(
+                          () async {
+                            await action_blocks.appTracking(
+                              context,
+                              userid: FFAppState().currentUser.id,
+                              eventName: 'usuario-ignorado',
+                              props: <String, dynamic>{
+                                'page': 'central-conexoes',
+                              },
+                            );
+                          }(),
+                        );
                       },
                     ),
                     FlutterFlowIconButton(
@@ -195,6 +261,18 @@ class _MatchPageWidgetState extends State<MatchPageWidget>
                       ),
                       onPressed: () async {
                         _model.swipeableStackController.swipeRight();
+                        unawaited(
+                          () async {
+                            await action_blocks.appTracking(
+                              context,
+                              userid: FFAppState().currentUser.id,
+                              eventName: 'conexao-solicitada',
+                              props: <String, dynamic>{
+                                'page': 'central-conexoes',
+                              },
+                            );
+                          }(),
+                        );
                       },
                     ),
                   ],

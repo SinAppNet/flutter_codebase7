@@ -5,9 +5,12 @@ import '/backend/supabase/supabase.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:async';
+import '/actions/actions.dart' as action_blocks;
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'signin_model.dart';
@@ -29,6 +32,19 @@ class _SigninWidgetState extends State<SigninWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => SigninModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      await action_blocks.appTracking(
+        context,
+        userid: FFAppState().currentUser.id,
+        eventName: 'page-loaded',
+        pageName: 'cadastro2',
+        props: <String, dynamic>{
+          'page_name': 'cadastro2',
+        },
+      );
+    });
 
     _model.nomeTextController ??= TextEditingController();
     _model.nomeFocusNode ??= FocusNode();
@@ -1138,6 +1154,44 @@ class _SigninWidgetState extends State<SigninWidget> {
                                       id: _model.createdUser?.id,
                                     );
 
+                                    unawaited(
+                                      () async {
+                                        await SegmentGroup.identifyCall.call(
+                                          userId: _model
+                                              .editedUser?.firstOrNull?.id,
+                                          email: currentUserEmail,
+                                          name: _model
+                                              .editedUser?.firstOrNull?.nome,
+                                          databaseUuid: currentUserUid,
+                                          timestamp:
+                                              getCurrentTimestamp.toString(),
+                                          whatsapp: _model.editedUser
+                                              ?.firstOrNull?.whatsapp,
+                                        );
+                                      }(),
+                                    );
+                                    unawaited(
+                                      () async {
+                                        await SegmentGroup.trackingCall.call(
+                                          userId: _model
+                                              .editedUser?.firstOrNull?.id,
+                                          eventName: 'sign-in',
+                                          timestamp:
+                                              getCurrentTimestamp.toString(),
+                                        );
+                                      }(),
+                                    );
+                                    unawaited(
+                                      () async {
+                                        await SegmentGroup.pageCall.call(
+                                          userId: _model
+                                              .editedUser?.firstOrNull?.id,
+                                          pageName: 'Cadastro 2',
+                                          timestamp:
+                                              getCurrentTimestamp.toString(),
+                                        );
+                                      }(),
+                                    );
                                     FFAppState().currentUser =
                                         CurrentUserStruct(
                                       id: _model.createdUser?.id,
@@ -1437,6 +1491,16 @@ class _SigninWidgetState extends State<SigninWidget> {
                               );
                               FFAppState().invited = false;
                               safeSetState(() {});
+                              unawaited(
+                                () async {
+                                  await action_blocks.appTracking(
+                                    context,
+                                    userid: FFAppState().currentUser.id,
+                                    eventName: 'sign-in finalizado',
+                                    pageName: 'cadastro2',
+                                  );
+                                }(),
+                              );
 
                               context.pushNamed(
                                 'matchPage',

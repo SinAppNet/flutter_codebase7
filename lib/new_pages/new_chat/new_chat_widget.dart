@@ -6,8 +6,10 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
 import 'dart:async';
+import '/actions/actions.dart' as action_blocks;
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 import 'package:record/record.dart';
@@ -35,6 +37,29 @@ class _NewChatWidgetState extends State<NewChatWidget> {
   void initState() {
     super.initState();
     _model = createModel(context, () => NewChatModel());
+
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      unawaited(
+        () async {
+          await _model.mensagens?.animateTo(
+            _model.mensagens!.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 100),
+            curve: Curves.ease,
+          );
+        }(),
+      );
+      await Future.delayed(const Duration(milliseconds: 200));
+      unawaited(
+        () async {
+          await _model.mensagens?.animateTo(
+            _model.mensagens!.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 100),
+            curve: Curves.ease,
+          );
+        }(),
+      );
+    });
 
     _model.textController ??= TextEditingController();
     _model.textFieldFocusNode ??= FocusNode();
@@ -256,107 +281,284 @@ class _NewChatWidgetState extends State<NewChatWidget> {
                   ),
                 ),
                 Expanded(
-                  child: StreamBuilder<List<MensagensRow>>(
-                    stream: _model.containerSupabaseStream ??= SupaFlow.client
-                        .from("mensagens")
-                        .stream(primaryKey: ['id'])
-                        .eqOrNull(
-                          'chat',
-                          widget.chat?.id,
-                        )
-                        .map((list) =>
-                            list.map((item) => MensagensRow(item)).toList()),
-                    builder: (context, snapshot) {
-                      // Customize what your widget looks like when it's loading.
-                      if (!snapshot.hasData) {
-                        return const Center(
-                          child: SizedBox(
-                            width: 50.0,
-                            height: 50.0,
-                            child: SpinKitPulse(
-                              color: Color(0xFF009C3B),
-                              size: 50.0,
-                            ),
-                          ),
-                        );
-                      }
-                      List<MensagensRow> containerMensagensRowList =
-                          snapshot.data!;
+                  child: Container(
+                    decoration: const BoxDecoration(),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        if (widget.chat!.messagesCount! > 0)
+                          Expanded(
+                            child: StreamBuilder<List<MensagensRow>>(
+                              stream: _model.mensagensSupabaseStream ??=
+                                  SupaFlow.client
+                                      .from("mensagens")
+                                      .stream(primaryKey: ['id'])
+                                      .eqOrNull(
+                                        'chat',
+                                        widget.chat?.id,
+                                      )
+                                      .map((list) => list
+                                          .map((item) => MensagensRow(item))
+                                          .toList())
+                                    ..listen((_) {
+                                      unawaited(
+                                        () async {
+                                          await _model.mensagens?.animateTo(
+                                            _model.mensagens!.position
+                                                .maxScrollExtent,
+                                            duration:
+                                                const Duration(milliseconds: 100),
+                                            curve: Curves.ease,
+                                          );
+                                        }(),
+                                      );
 
-                      return Container(
-                        decoration: const BoxDecoration(),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            if ((containerMensagensRowList.isNotEmpty) == true)
-                              Expanded(
-                                child: Builder(
-                                  builder: (context) {
-                                    final messages =
-                                        containerMensagensRowList.toList();
-
-                                    return ListView.separated(
-                                      padding: const EdgeInsets.fromLTRB(
-                                        0,
-                                        24.0,
-                                        0,
-                                        68.0,
+                                      safeSetState(() {});
+                                    }),
+                              builder: (context, snapshot) {
+                                // Customize what your widget looks like when it's loading.
+                                if (!snapshot.hasData) {
+                                  return const Center(
+                                    child: SizedBox(
+                                      width: 50.0,
+                                      height: 50.0,
+                                      child: SpinKitPulse(
+                                        color: Color(0xFF009C3B),
+                                        size: 50.0,
                                       ),
-                                      shrinkWrap: true,
-                                      scrollDirection: Axis.vertical,
-                                      itemCount: messages.length,
-                                      separatorBuilder: (_, __) =>
-                                          const SizedBox(height: 8.0),
-                                      itemBuilder: (context, messagesIndex) {
-                                        final messagesItem =
-                                            messages[messagesIndex];
-                                        return Padding(
-                                          padding:
-                                              const EdgeInsetsDirectional.fromSTEB(
-                                                  24.0, 0.0, 24.0, 0.0),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.max,
-                                            children: [
-                                              if (messagesItem
-                                                      .firstMessageOfDay ==
-                                                  true)
-                                                Padding(
+                                    ),
+                                  );
+                                }
+                                List<MensagensRow> mensagensMensagensRowList =
+                                    snapshot.data!;
+
+                                return ListView.separated(
+                                  padding: const EdgeInsets.fromLTRB(
+                                    0,
+                                    24.0,
+                                    0,
+                                    54.0,
+                                  ),
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.vertical,
+                                  itemCount: mensagensMensagensRowList.length,
+                                  separatorBuilder: (_, __) =>
+                                      const SizedBox(height: 8.0),
+                                  itemBuilder: (context, mensagensIndex) {
+                                    final mensagensMensagensRow =
+                                        mensagensMensagensRowList[
+                                            mensagensIndex];
+                                    return Padding(
+                                      padding: const EdgeInsetsDirectional.fromSTEB(
+                                          24.0, 0.0, 24.0, 0.0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: [
+                                          if (mensagensMensagensRow
+                                                  .firstMessageOfDay ==
+                                              true)
+                                            Padding(
+                                              padding: const EdgeInsetsDirectional
+                                                  .fromSTEB(
+                                                      0.0, 0.0, 0.0, 24.0),
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .alternate,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12.0),
+                                                ),
+                                                child: Padding(
                                                   padding: const EdgeInsetsDirectional
                                                       .fromSTEB(
-                                                          0.0, 0.0, 0.0, 24.0),
+                                                          12.0, 8.0, 12.0, 8.0),
+                                                  child: Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        dateTimeFormat(
+                                                          "relative",
+                                                          mensagensMensagensRow
+                                                              .createdAt,
+                                                          locale: FFLocalizations
+                                                                      .of(
+                                                                          context)
+                                                                  .languageShortCode ??
+                                                              FFLocalizations.of(
+                                                                      context)
+                                                                  .languageCode,
+                                                        ),
+                                                        style:
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .bodyMedium
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Inter',
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          if (mensagensMensagensRow.sender ==
+                                              FFAppState().currentUser.id)
+                                            Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.end,
+                                              children: [
+                                                Align(
+                                                  alignment:
+                                                      const AlignmentDirectional(
+                                                          1.0, -1.0),
                                                   child: Container(
-                                                    decoration: BoxDecoration(
-                                                      color:
-                                                          FlutterFlowTheme.of(
-                                                                  context)
-                                                              .alternate,
+                                                    constraints: const BoxConstraints(
+                                                      minHeight: 35.0,
+                                                    ),
+                                                    decoration: const BoxDecoration(
+                                                      color: Color(0xFF20A090),
                                                       borderRadius:
-                                                          BorderRadius.circular(
-                                                              12.0),
+                                                          BorderRadius.only(
+                                                        bottomLeft:
+                                                            Radius.circular(
+                                                                18.0),
+                                                        bottomRight:
+                                                            Radius.circular(
+                                                                18.0),
+                                                        topLeft:
+                                                            Radius.circular(
+                                                                18.0),
+                                                        topRight:
+                                                            Radius.circular(
+                                                                0.0),
+                                                      ),
                                                     ),
                                                     child: Padding(
                                                       padding:
-                                                          const EdgeInsetsDirectional
-                                                              .fromSTEB(
-                                                                  12.0,
-                                                                  8.0,
-                                                                  12.0,
-                                                                  8.0),
-                                                      child: Row(
+                                                          const EdgeInsets.all(10.0),
+                                                      child: Column(
                                                         mainAxisSize:
                                                             MainAxisSize.min,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .end,
                                                         children: [
                                                           Text(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              mensagensMensagensRow
+                                                                  .mensagem,
+                                                              'message',
+                                                            ),
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .bodyMedium
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Inter',
+                                                                  color: Colors
+                                                                      .white,
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                ),
+                                                          ),
+                                                          Text(
                                                             dateTimeFormat(
-                                                              "relative",
-                                                              messagesItem
+                                                              "H:m",
+                                                              mensagensMensagensRow
                                                                   .createdAt,
                                                               locale: FFLocalizations
                                                                       .of(context)
                                                                   .languageCode,
+                                                            ),
+                                                            textAlign:
+                                                                TextAlign.end,
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .bodyMedium
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Inter',
+                                                                  color: FlutterFlowTheme.of(
+                                                                          context)
+                                                                      .primaryBackground,
+                                                                  fontSize:
+                                                                      12.0,
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w200,
+                                                                ),
+                                                          ),
+                                                        ].divide(const SizedBox(
+                                                            height: 8.0)),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ].divide(const SizedBox(height: 10.0)),
+                                            ),
+                                          if (mensagensMensagensRow.sender !=
+                                              FFAppState().currentUser.id)
+                                            Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Align(
+                                                  alignment:
+                                                      const AlignmentDirectional(
+                                                          -1.0, -1.0),
+                                                  child: Container(
+                                                    constraints: const BoxConstraints(
+                                                      minHeight: 35.0,
+                                                      maxWidth: 280.0,
+                                                    ),
+                                                    decoration: const BoxDecoration(
+                                                      color: Color(0xFFF2F7FB),
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                        bottomLeft:
+                                                            Radius.circular(
+                                                                18.0),
+                                                        bottomRight:
+                                                            Radius.circular(
+                                                                18.0),
+                                                        topLeft:
+                                                            Radius.circular(
+                                                                0.0),
+                                                        topRight:
+                                                            Radius.circular(
+                                                                18.0),
+                                                      ),
+                                                    ),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(10.0),
+                                                      child: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.max,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            valueOrDefault<
+                                                                String>(
+                                                              mensagensMensagensRow
+                                                                  .mensagem,
+                                                              'message',
                                                             ),
                                                             style: FlutterFlowTheme
                                                                     .of(context)
@@ -368,377 +570,87 @@ class _NewChatWidgetState extends State<NewChatWidget> {
                                                                       0.0,
                                                                 ),
                                                           ),
-                                                        ],
+                                                          Text(
+                                                            dateTimeFormat(
+                                                              "H:m",
+                                                              mensagensMensagensRow
+                                                                  .createdAt,
+                                                              locale: FFLocalizations
+                                                                      .of(context)
+                                                                  .languageCode,
+                                                            ),
+                                                            style: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .bodyMedium
+                                                                .override(
+                                                                  fontFamily:
+                                                                      'Inter',
+                                                                  color: const Color(
+                                                                      0xFF797C7B),
+                                                                  fontSize:
+                                                                      12.0,
+                                                                  letterSpacing:
+                                                                      0.0,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w200,
+                                                                ),
+                                                          ),
+                                                        ].divide(const SizedBox(
+                                                            height: 8.0)),
                                                       ),
                                                     ),
                                                   ),
                                                 ),
-                                              if (messagesItem.sender ==
-                                                  FFAppState().currentUser.id)
-                                                Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.end,
-                                                  children: [
-                                                    Align(
-                                                      alignment:
-                                                          const AlignmentDirectional(
-                                                              1.0, -1.0),
-                                                      child: Container(
-                                                        constraints:
-                                                            const BoxConstraints(
-                                                          minHeight: 35.0,
-                                                        ),
-                                                        decoration:
-                                                            const BoxDecoration(
-                                                          color:
-                                                              Color(0xFF20A090),
-                                                          borderRadius:
-                                                              BorderRadius.only(
-                                                            bottomLeft:
-                                                                Radius.circular(
-                                                                    18.0),
-                                                            bottomRight:
-                                                                Radius.circular(
-                                                                    18.0),
-                                                            topLeft:
-                                                                Radius.circular(
-                                                                    18.0),
-                                                            topRight:
-                                                                Radius.circular(
-                                                                    0.0),
-                                                          ),
-                                                        ),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets.all(
-                                                                  10.0),
-                                                          child: Column(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .end,
-                                                            children: [
-                                                              if (messagesItem
-                                                                      .isAudio ==
-                                                                  false)
-                                                                Text(
-                                                                  valueOrDefault<
-                                                                      String>(
-                                                                    messagesItem
-                                                                        .mensagem,
-                                                                    'Mensagem',
-                                                                  ),
-                                                                  style: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodyMedium
-                                                                      .override(
-                                                                        fontFamily:
-                                                                            'Inter',
-                                                                        color: Colors
-                                                                            .white,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                      ),
-                                                                ),
-                                                              if (messagesItem
-                                                                      .isAudio ==
-                                                                  true)
-                                                                FlutterFlowAudioPlayer(
-                                                                  audio: Audio
-                                                                      .network(
-                                                                    messagesItem
-                                                                        .audioPath!,
-                                                                    metas:
-                                                                        Metas(
-                                                                      title:
-                                                                          'Title',
-                                                                    ),
-                                                                  ),
-                                                                  titleTextStyle: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .titleLarge
-                                                                      .override(
-                                                                        fontFamily:
-                                                                            'Inter',
-                                                                        fontSize:
-                                                                            0.0,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                      ),
-                                                                  playbackDurationTextStyle: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .labelMedium
-                                                                      .override(
-                                                                        fontFamily:
-                                                                            'Inter',
-                                                                        color: Colors
-                                                                            .white,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                      ),
-                                                                  fillColor: Colors
-                                                                      .transparent,
-                                                                  playbackButtonColor:
-                                                                      Colors
-                                                                          .white,
-                                                                  activeTrackColor:
-                                                                      const Color(
-                                                                          0xFF009C3B),
-                                                                  inactiveTrackColor:
-                                                                      FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .alternate,
-                                                                  elevation:
-                                                                      0.0,
-                                                                  playInBackground:
-                                                                      PlayInBackground
-                                                                          .enabled,
-                                                                ),
-                                                              Text(
-                                                                dateTimeFormat(
-                                                                  "H:m",
-                                                                  messagesItem
-                                                                      .createdAt,
-                                                                  locale: FFLocalizations.of(
-                                                                          context)
-                                                                      .languageCode,
-                                                                ),
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .end,
-                                                                style: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodyMedium
-                                                                    .override(
-                                                                      fontFamily:
-                                                                          'Inter',
-                                                                      color: FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .primaryBackground,
-                                                                      fontSize:
-                                                                          12.0,
-                                                                      letterSpacing:
-                                                                          0.0,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w200,
-                                                                    ),
-                                                              ),
-                                                            ].divide(const SizedBox(
-                                                                height: 8.0)),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ].divide(
-                                                      const SizedBox(height: 10.0)),
-                                                ),
-                                              if (messagesItem.sender !=
-                                                  FFAppState().currentUser.id)
-                                                Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Align(
-                                                      alignment:
-                                                          const AlignmentDirectional(
-                                                              -1.0, -1.0),
-                                                      child: Container(
-                                                        constraints:
-                                                            const BoxConstraints(
-                                                          minHeight: 35.0,
-                                                          maxWidth: 280.0,
-                                                        ),
-                                                        decoration:
-                                                            const BoxDecoration(
-                                                          color:
-                                                              Color(0xFFF2F7FB),
-                                                          borderRadius:
-                                                              BorderRadius.only(
-                                                            bottomLeft:
-                                                                Radius.circular(
-                                                                    18.0),
-                                                            bottomRight:
-                                                                Radius.circular(
-                                                                    18.0),
-                                                            topLeft:
-                                                                Radius.circular(
-                                                                    0.0),
-                                                            topRight:
-                                                                Radius.circular(
-                                                                    18.0),
-                                                          ),
-                                                        ),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets.all(
-                                                                  10.0),
-                                                          child: Column(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .max,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              if (messagesItem
-                                                                      .isAudio ==
-                                                                  false)
-                                                                Text(
-                                                                  valueOrDefault<
-                                                                      String>(
-                                                                    messagesItem
-                                                                        .mensagem,
-                                                                    'Mensagem',
-                                                                  ),
-                                                                  style: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .bodyMedium
-                                                                      .override(
-                                                                        fontFamily:
-                                                                            'Inter',
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                      ),
-                                                                ),
-                                                              if (messagesItem
-                                                                      .isAudio ==
-                                                                  true)
-                                                                FlutterFlowAudioPlayer(
-                                                                  audio: Audio
-                                                                      .network(
-                                                                    messagesItem
-                                                                        .audioPath!,
-                                                                    metas:
-                                                                        Metas(
-                                                                      title:
-                                                                          'Title',
-                                                                    ),
-                                                                  ),
-                                                                  titleTextStyle: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .titleLarge
-                                                                      .override(
-                                                                        fontFamily:
-                                                                            'Inter',
-                                                                        fontSize:
-                                                                            0.0,
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                      ),
-                                                                  playbackDurationTextStyle: FlutterFlowTheme.of(
-                                                                          context)
-                                                                      .labelMedium
-                                                                      .override(
-                                                                        fontFamily:
-                                                                            'Inter',
-                                                                        color: const Color(
-                                                                            0xFF009C3B),
-                                                                        letterSpacing:
-                                                                            0.0,
-                                                                      ),
-                                                                  fillColor: Colors
-                                                                      .transparent,
-                                                                  playbackButtonColor:
-                                                                      const Color(
-                                                                          0xFF009C3B),
-                                                                  activeTrackColor:
-                                                                      const Color(
-                                                                          0xFF009C3B),
-                                                                  inactiveTrackColor:
-                                                                      FlutterFlowTheme.of(
-                                                                              context)
-                                                                          .alternate,
-                                                                  elevation:
-                                                                      0.0,
-                                                                  playInBackground:
-                                                                      PlayInBackground
-                                                                          .enabled,
-                                                                ),
-                                                              Text(
-                                                                dateTimeFormat(
-                                                                  "H:m",
-                                                                  messagesItem
-                                                                      .createdAt,
-                                                                  locale: FFLocalizations.of(
-                                                                          context)
-                                                                      .languageCode,
-                                                                ),
-                                                                style: FlutterFlowTheme.of(
-                                                                        context)
-                                                                    .bodyMedium
-                                                                    .override(
-                                                                      fontFamily:
-                                                                          'Inter',
-                                                                      color: const Color(
-                                                                          0xFF797C7B),
-                                                                      fontSize:
-                                                                          12.0,
-                                                                      letterSpacing:
-                                                                          0.0,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w200,
-                                                                    ),
-                                                              ),
-                                                            ].divide(const SizedBox(
-                                                                height: 8.0)),
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ].divide(
-                                                      const SizedBox(height: 10.0)),
-                                                ),
-                                            ].divide(const SizedBox(height: 8.0)),
-                                          ),
-                                        );
-                                      },
-                                      controller: _model.mensagens,
+                                              ].divide(const SizedBox(height: 10.0)),
+                                            ),
+                                        ].divide(const SizedBox(height: 8.0)),
+                                      ),
                                     );
+                                  },
+                                  controller: _model.mensagens,
+                                );
+                              },
+                            ),
+                          ),
+                        if (widget.chat!.messagesCount! < 1)
+                          Expanded(
+                            child: Align(
+                              alignment: const AlignmentDirectional(0.0, -1.0),
+                              child: wrapWithModel(
+                                model: _model.initChatMessagesModel,
+                                updateCallback: () => safeSetState(() {}),
+                                child: InitChatMessagesWidget(
+                                  username: widget.chat!.users
+                                      .where((e) =>
+                                          e != FFAppState().currentUser.id)
+                                      .toList()
+                                      .firstOrNull!,
+                                  mensagem: (message) async {
+                                    safeSetState(() {
+                                      _model.textController?.text = message!;
+                                    });
                                   },
                                 ),
                               ),
-                            if ((containerMensagensRowList.isNotEmpty) == false)
-                              Expanded(
-                                child: Align(
-                                  alignment: const AlignmentDirectional(0.0, -1.0),
-                                  child: wrapWithModel(
-                                    model: _model.initChatMessagesModel,
-                                    updateCallback: () => safeSetState(() {}),
-                                    child: InitChatMessagesWidget(
-                                      username: widget.chat!.users
-                                          .where((e) =>
-                                              e != FFAppState().currentUser.id)
-                                          .toList()
-                                          .firstOrNull!,
-                                      mensagem: (message) async {
-                                        safeSetState(() {
-                                          _model.textController?.text =
-                                              message!;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      );
-                    },
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
                 Column(
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    if (_model.currentAudio != null &&
-                        _model.currentAudio != '')
+                    if ((_model.currentAudio != null &&
+                            _model.currentAudio != '') &&
+                        responsiveVisibility(
+                          context: context,
+                          phone: false,
+                          tablet: false,
+                          tabletLandscape: false,
+                          desktop: false,
+                        ))
                       Padding(
                         padding: const EdgeInsetsDirectional.fromSTEB(
                             18.0, 18.0, 18.0, 18.0),
@@ -1109,6 +1021,21 @@ class _NewChatWidgetState extends State<NewChatWidget> {
                                                 widget.chat?.id,
                                               ),
                                             );
+                                            unawaited(
+                                              () async {
+                                                await action_blocks.appTracking(
+                                                  context,
+                                                  userid: FFAppState()
+                                                      .currentUser
+                                                      .id,
+                                                  eventName: 'new-message',
+                                                  props: <String, dynamic>{
+                                                    'page': 'chat',
+                                                    'chat-id': widget.chat?.id,
+                                                  },
+                                                );
+                                              }(),
+                                            );
                                           } else {
                                             await MensagensTable().insert({
                                               'chat': widget.chat?.id,
@@ -1163,6 +1090,21 @@ class _NewChatWidgetState extends State<NewChatWidget> {
                                                 widget.chat?.id,
                                               ),
                                             );
+                                            unawaited(
+                                              () async {
+                                                await action_blocks.appTracking(
+                                                  context,
+                                                  userid: FFAppState()
+                                                      .currentUser
+                                                      .id,
+                                                  eventName: 'new-message',
+                                                  props: <String, dynamic>{
+                                                    'page': 'chat',
+                                                    'chat-id': widget.chat?.id,
+                                                  },
+                                                );
+                                              }(),
+                                            );
                                           }
 
                                           safeSetState(() {});
@@ -1180,7 +1122,14 @@ class _NewChatWidgetState extends State<NewChatWidget> {
                               ),
                             ),
                           ),
-                          if (_model.isRecording == false)
+                          if ((_model.isRecording == false) &&
+                              responsiveVisibility(
+                                context: context,
+                                phone: false,
+                                tablet: false,
+                                tabletLandscape: false,
+                                desktop: false,
+                              ))
                             Padding(
                               padding: const EdgeInsetsDirectional.fromSTEB(
                                   0.0, 0.0, 18.0, 0.0),
@@ -1205,7 +1154,14 @@ class _NewChatWidgetState extends State<NewChatWidget> {
                                 },
                               ),
                             ),
-                          if (_model.isRecording == true)
+                          if ((_model.isRecording == true) &&
+                              responsiveVisibility(
+                                context: context,
+                                phone: false,
+                                tablet: false,
+                                tabletLandscape: false,
+                                desktop: false,
+                              ))
                             Padding(
                               padding: const EdgeInsetsDirectional.fromSTEB(
                                   0.0, 0.0, 18.0, 0.0),

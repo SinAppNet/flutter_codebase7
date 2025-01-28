@@ -12,8 +12,8 @@ class PostagemModel extends FlutterFlowModel<PostagemWidget> {
   ///  State fields for stateful widgets in this component.
 
   Completer<List<UsersRow>>? requestCompleter3;
-  Stream<List<FeedComentariosRow>>? containerSupabaseStream1;
-  Stream<List<LikesRow>>? containerSupabaseStream2;
+  Completer<List<LikesRow>>? requestCompleter1;
+  Completer<List<FeedComentariosRow>>? requestCompleter2;
 
   @override
   void initState(BuildContext context) {}
@@ -31,6 +31,36 @@ class PostagemModel extends FlutterFlowModel<PostagemWidget> {
       await Future.delayed(const Duration(milliseconds: 50));
       final timeElapsed = stopwatch.elapsedMilliseconds;
       final requestComplete = requestCompleter3?.isCompleted ?? false;
+      if (timeElapsed > maxWait || (requestComplete && timeElapsed > minWait)) {
+        break;
+      }
+    }
+  }
+
+  Future waitForRequestCompleted1({
+    double minWait = 0,
+    double maxWait = double.infinity,
+  }) async {
+    final stopwatch = Stopwatch()..start();
+    while (true) {
+      await Future.delayed(const Duration(milliseconds: 50));
+      final timeElapsed = stopwatch.elapsedMilliseconds;
+      final requestComplete = requestCompleter1?.isCompleted ?? false;
+      if (timeElapsed > maxWait || (requestComplete && timeElapsed > minWait)) {
+        break;
+      }
+    }
+  }
+
+  Future waitForRequestCompleted2({
+    double minWait = 0,
+    double maxWait = double.infinity,
+  }) async {
+    final stopwatch = Stopwatch()..start();
+    while (true) {
+      await Future.delayed(const Duration(milliseconds: 50));
+      final timeElapsed = stopwatch.elapsedMilliseconds;
+      final requestComplete = requestCompleter2?.isCompleted ?? false;
       if (timeElapsed > maxWait || (requestComplete && timeElapsed > minWait)) {
         break;
       }
